@@ -14,18 +14,24 @@ var audioOutputSelect = document.querySelector('select#audioOutput');
 var videoSelect = document.querySelector('select#videoSource');
 var selectors = [audioInputSelect, audioOutputSelect, videoSelect];
 var consoleOutput = document.querySelector('#console-output');
-var deviceId;
+var deviceMeta;
 
 audioOutputSelect.disabled = !('sinkId' in HTMLMediaElement.prototype);
 
 function gotDevices(deviceInfos) {
+  var cameraCount = 0;
   for (var i = 0; i !== deviceInfos.length; ++i) {
     var deviceInfo = deviceInfos[i];
+    deviceMeta = deviceInfo;
     console.log('deviceInfo: ' + deviceInfo.deviceId);
-    consoleOutput.innerHTML += 'deviceInfo: ' + deviceInfo.deviceId + ' label: ' + deviceInfo.label+ '<br>';
-    if (deviceInfo.kind === 'videoinput' && deviceInfo.label === 'Back Camera') {
+    consoleOutput.innerHTML += 'deviceInfo: ' + deviceInfo.deviceId + ' label: ' + deviceInfo.label + '<br>';
+    if (deviceInfo.kind === 'videoinput') {
+      if (cameraCount > 0) {
+      start(deviceInfo.deviceId, deviceInfo.label);
       consoleOutput.innerHTML += 'back camera!';
-      start(deviceInfo.deviceId);
+      } else {
+        cameraCount++;
+      }
     } else {
       // console.log('no rear video');
       // start();
@@ -41,7 +47,7 @@ function gotStream(stream) {
   return navigator.mediaDevices.enumerateDevices();
 }
 
-function start(p_deviceId) {
+function start(p_deviceId, p_label) {
   if (p_deviceId) {
     var constraints = {
       audio: false,
@@ -67,9 +73,9 @@ navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
 // start();
 
 function successCallback(stream) {
-  console.log('success!');
   window.stream = stream; // stream available to console
   video.srcObject = stream;
+  console.log(deviceMeta);
 }
 
 function errorCallback(error) {
