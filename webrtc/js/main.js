@@ -13,20 +13,18 @@ var audioInputSelect = document.querySelector('select#audioSource');
 var audioOutputSelect = document.querySelector('select#audioOutput');
 var videoSelect = document.querySelector('select#videoSource');
 var selectors = [audioInputSelect, audioOutputSelect, videoSelect];
+var consoleOutput = document.querySelector('#console-output');
 var deviceId;
 
 audioOutputSelect.disabled = !('sinkId' in HTMLMediaElement.prototype);
 
 function gotDevices(deviceInfos) {
-  console.log('hello');
-  // Handles being called several times to update labels. Preserve values.
-  var values = selectors.map(function(select) {
-    return select.value;
-  });
   for (var i = 0; i !== deviceInfos.length; ++i) {
     var deviceInfo = deviceInfos[i];
-    console.log('deviceInfo: ' + deviceInfo.label);
+    console.log('deviceInfo: ' + deviceInfo.deviceId);
+    consoleOutput.innerHTML += 'deviceInfo: ' + deviceInfo.deviceId + ' label: ' + deviceInfo.label+ '<br>';
     if (deviceInfo.kind === 'videoinput' && deviceInfo.label === 'Back Camera') {
+      consoleOutput.innerHTML += 'back camera!';
       start(deviceInfo.deviceId);
     } else {
       // console.log('no rear video');
