@@ -13,75 +13,28 @@ var audioInputSelect = document.querySelector('select#audioSource');
 var audioOutputSelect = document.querySelector('select#audioOutput');
 var videoSelect = document.querySelector('select#videoSource');
 var selectors = [audioInputSelect, audioOutputSelect, videoSelect];
+var deviceId;
 
 audioOutputSelect.disabled = !('sinkId' in HTMLMediaElement.prototype);
 
 function gotDevices(deviceInfos) {
+  console.log('hello');
   // Handles being called several times to update labels. Preserve values.
   var values = selectors.map(function(select) {
     return select.value;
   });
-  selectors.forEach(function(select) {
-    while (select.firstChild) {
-      select.removeChild(select.firstChild);
-    }
-  });
   for (var i = 0; i !== deviceInfos.length; ++i) {
     var deviceInfo = deviceInfos[i];
-    var option = document.createElement('option');
-    option.value = deviceInfo.deviceId;
-    if (deviceInfo.kind === 'audioinput') {
-      option.text = deviceInfo.label ||
-          'microphone ' + (audioInputSelect.length + 1);
-      audioInputSelect.appendChild(option);
-    } else if (deviceInfo.kind === 'audiooutput') {
-      option.text = deviceInfo.label || 'speaker ' +
-          (audioOutputSelect.length + 1);
-      audioOutputSelect.appendChild(option);
-    } else if (deviceInfo.kind === 'videoinput') {
-      option.text = deviceInfo.label || 'camera ' + (videoSelect.length + 1);
-      videoSelect.appendChild(option);
+    console.log('deviceInfo: ' + deviceInfo.label);
+    if (deviceInfo.kind === 'videoinput' && deviceInfo.label === 'Back Camera') {
+      start(deviceInfo.deviceId);
     } else {
-      console.log('Some other kind of source/device: ', deviceInfo);
+      // console.log('no rear video');
+      // start();
     }
   }
-  selectors.forEach(function(select, selectorIndex) {
-    if (Array.prototype.slice.call(select.childNodes).some(function(n) {
-      return n.value === values[selectorIndex];
-    })) {
-      select.value = values[selectorIndex];
-    }
-  });
 }
 
-navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
-
-// Attach audio output device to video element using device/sink ID.
-function attachSinkId(element, sinkId) {
-  if (typeof element.sinkId !== 'undefined') {
-    element.setSinkId(sinkId)
-    .then(function() {
-      console.log('Success, audio output device attached: ' + sinkId);
-    })
-    .catch(function(error) {
-      var errorMessage = error;
-      if (error.name === 'SecurityError') {
-        errorMessage = 'You need to use HTTPS for selecting audio output ' +
-            'device: ' + error;
-      }
-      console.error(errorMessage);
-      // Jump back to first output device in the list as it's the default.
-      audioOutputSelect.selectedIndex = 0;
-    });
-  } else {
-    console.warn('Browser does not support output device selection.');
-  }
-}
-
-function changeAudioDestination() {
-  var audioDestination = audioOutputSelect.value;
-  attachSinkId(videoElement, audioDestination);
-}
 
 function gotStream(stream) {
   window.stream = stream; // make stream available to console
@@ -90,27 +43,40 @@ function gotStream(stream) {
   return navigator.mediaDevices.enumerateDevices();
 }
 
-function start() {
-  if (window.stream) {
-    window.stream.getTracks().forEach(function(track) {
-      track.stop();
-    });
+function start(p_deviceId) {
+  if (p_deviceId) {
+    var constraints = {
+      audio: false,
+      video: {deviceId: p_deviceId}
+    };
+  } else {
+    var constraints = {
+      audio: false,
+      video: true
+    };
   }
-  var audioSource = audioInputSelect.value;
-  var videoSource = videoSelect.value;
-  var constraints = {
-    audio: {deviceId: audioSource ? {exact: audioSource} : undefined},
-    video: {deviceId: videoSource ? {exact: videoSource} : undefined}
-  };
-  navigator.mediaDevices.getUserMedia(constraints).
-      then(gotStream).then(gotDevices).catch(handleError);
+  
+  // var constraints = {
+  //   audio: {deviceId: audioSource ? {exact: audioSource} : undefined},
+  //   video: {deviceId: videoSource ? {exact: videoSource} : undefined}
+  // };
+  // navigator.mediaDevices.getUserMedia(constraints).
+      // then(gotStream).then(gotDevices).catch(handleError);
+  navigator.getUserMedia(constraints, successCallback, errorCallback);
 }
 
-audioInputSelect.onchange = start;
-audioOutputSelect.onchange = changeAudioDestination;
-videoSelect.onchange = start;
+navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
+// start();
 
-start();
+function successCallback(stream) {
+  console.log('success!');
+  window.stream = stream; // stream available to console
+  video.srcObject = stream;
+}
+
+function errorCallback(error) {
+  console.log('navigator.getUserMedia error: ', error);
+}
 
 function handleError(error) {
   console.log('navigator.getUserMedia error: ', error);
