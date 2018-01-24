@@ -19,26 +19,35 @@ var deviceMeta;
 audioOutputSelect.disabled = !('sinkId' in HTMLMediaElement.prototype);
 
 function gotDevices(deviceInfos) {
+  for (var i = 0; i !== deviceInfos.length; ++i) {
+    var deviceInfo = deviceInfos[i];
+    deviceMeta = deviceInfo;
+    console.log('deviceInfo: ' + deviceInfo.deviceId + ' label: ' + deviceInfo.label);
+    consoleOutput.innerHTML += 'deviceInfo: ' + deviceInfo.deviceId + ' label: ' + deviceInfo.label + '<br>';
+
+    // if (deviceInfo.label === 'Back Camera') {
+    //   console.log('back camera!');
+    //   var constraints = {
+    //     audio: false,
+    //     video: {deviceId: deviceInfo.deviceId}
+    //   };
+
+    //   navigator.getUserMedia(constraints, camSwitchCallback, errorCallback);
+    //   return;
+    // }
+  }
+}
+
+
+function gotDeviceInfo(deviceInfos) {
   var cameraCount = 0;
   for (var i = 0; i !== deviceInfos.length; ++i) {
     var deviceInfo = deviceInfos[i];
     deviceMeta = deviceInfo;
     console.log('deviceInfo: ' + deviceInfo.deviceId);
     consoleOutput.innerHTML += 'deviceInfo: ' + deviceInfo.deviceId + ' label: ' + deviceInfo.label + '<br>';
-    if (deviceInfo.kind === 'videoinput') {
-      if (cameraCount > 0) {
-      start(deviceInfo.deviceId, deviceInfo.label);
-      consoleOutput.innerHTML += 'back camera!';
-      } else {
-        cameraCount++;
-      }
-    } else {
-      // console.log('no rear video');
-      // start();
-    }
   }
 }
-
 
 function gotStream(stream) {
   window.stream = stream; // make stream available to console
@@ -47,18 +56,12 @@ function gotStream(stream) {
   return navigator.mediaDevices.enumerateDevices();
 }
 
-function start(p_deviceId, p_label) {
-  if (p_deviceId) {
+function start() {
     var constraints = {
       audio: false,
-      video: {deviceId: p_deviceId}
+      video: {facingMode: "environment"}
     };
-  } else {
-    var constraints = {
-      audio: false,
-      video: true
-    };
-  }
+
   
   // var constraints = {
   //   audio: {deviceId: audioSource ? {exact: audioSource} : undefined},
@@ -69,13 +72,19 @@ function start(p_deviceId, p_label) {
   navigator.getUserMedia(constraints, successCallback, errorCallback);
 }
 
-navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
-// start();
+// navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
+start();
 
 function successCallback(stream) {
   window.stream = stream; // stream available to console
-  video.srcObject = stream;
-  console.log(deviceMeta);
+  videoElement.srcObject = stream;
+  navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
+}
+
+function camSwitchCallback(stream) {
+  window.stream = stream; // stream available to console
+  videoElement.srcObject = stream;
+  // navigator.mediaDevices.enumerateDevices().then(gotDeviceInfo).catch(handleError);
 }
 
 function errorCallback(error) {
