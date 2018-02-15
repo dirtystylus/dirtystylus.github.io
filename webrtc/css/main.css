@@ -3,6 +3,22 @@ body {
 }
 
 video {
+  position: absolute;
   max-width: 100%;
-  width: 700px;
+  width: 90%;
+  height: 70%;
+}
+
+.image-overlay {
+  position: absolute;
+  max-width: 100%;
+  width: 90%;
+  max-height: 70%;
+  clip-path: inset(10px 20px 30px 40px round 10px) margin-box;
+  -webkit-clip-path: inset(100px 150px 0px 140px) margin-box;
+  opacity: .7;
+}
+
+.console-output {
+  display: none;
 }
