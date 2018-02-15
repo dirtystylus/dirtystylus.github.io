@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>Realtime communication with WebRTC</title>
+
+  <link rel="stylesheet" href="css/main.css" />
+
+</head>
+
+<body>
+  <div id="container">
+    <div class="select">
+      <label for="audioSource">Audio input source: </label><select id="audioSource"></select>
+    </div>
+
+    <div class="select">
+      <label for="audioOutput">Audio output destination: </label><select id="audioOutput"></select>
+    </div>
+
+    <div class="select">
+      <label for="videoSource">Video source: </label><select id="videoSource"></select>
+    </div>
+
+    <video id="video" autoplay playsinline></video>
+    <div id="console-output"></div>
+  </div>
+  <script src="js/test-02.js"></script>
+</body>
+
+</html>
