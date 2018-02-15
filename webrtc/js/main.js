@@ -27,7 +27,7 @@ function start() {
   navigator.getUserMedia(constraints, successCallback, handleError);
 }
 
-start();
+
 
 function successCallback(stream) {
   window.stream = stream; // stream available to console
@@ -38,3 +38,14 @@ function successCallback(stream) {
 function handleError(error) {
   console.log('navigator.getUserMedia error: ', error);
 }
+
+start();
+
+function toggleImageOverlay() {
+  console.log('hello');
+  const imageOverlay = document.querySelector('.image-overlay');
+  imageOverlay.style.display === 'block' ? imageOverlay.style.display = 'none' : imageOverlay.style.display = 'block';
+}
+
+const overlayToggleButton = document.querySelector('.image-overlay-toggle');
+overlayToggleButton.addEventListener('click', toggleImageOverlay);
