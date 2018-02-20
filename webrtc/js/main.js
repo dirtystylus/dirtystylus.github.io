@@ -8,7 +8,7 @@
 
 'use strict';
 
-var videoElement = document.querySelector('video');
+var videoElement = document.querySelector('#video-feed');
 var consoleOutput = document.querySelector('#console-output');
 
 function gotDevices(deviceInfos) {
@@ -47,5 +47,14 @@ function toggleImageOverlay() {
   imageOverlay.style.display === 'block' ? imageOverlay.style.display = 'none' : imageOverlay.style.display = 'block';
 }
 
-const overlayToggleButton = document.querySelector('.image-overlay-toggle');
-overlayToggleButton.addEventListener('click', toggleImageOverlay);
+function toggleVideoOverlay() {
+  const videoOverlay = document.querySelector('#video-overlay');
+  // videoOverlay.style.display === 'block' ? videoOverlay.style.display = 'none' : videoOverlay.style.display = 'block';
+  videoOverlay.play();
+}
+
+// const overlayToggleButton = document.querySelector('.image-overlay-toggle');
+// overlayToggleButton.addEventListener('click', toggleImageOverlay);
+
+const videoOverlayToggleButton = document.querySelector('.video-overlay-toggle');
+videoOverlayToggleButton.addEventListener('click', toggleVideoOverlay);

@@ -2,13 +2,27 @@ body {
   font-family: sans-serif;
 }
 
-video {
+#video-feed {
+  z-index: 9;
   position: absolute;
   top: 0;
   left: 0;
   max-width: 100%;
   width: 90%;
   /* height: 70%; */
+}
+
+#video-overlay {
+  z-index: 998;
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-width: 100%;
+  width: 90%;
+  clip-path: inset(0px 150px 0px 140px) margin-box;
+  -webkit-clip-path: inset(200px 150px 100px 140px) margin-box;
+  opacity: .8;
+  -webkit-filter: grayscale(1);
 }
 
 .image-overlay {
@@ -29,6 +43,15 @@ video {
   position: relative;
   z-index: 999;
   margin: 40px 0 0 30px;
+  height: 40px;
+  width: 100px; 
+}
+
+.video-overlay-toggle {
+  position: absolute;
+  z-index: 999;
+  margin: 240px 0 0 0;
+  right: 100px;
   height: 40px;
   width: 100px; 
 }
